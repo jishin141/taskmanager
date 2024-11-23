@@ -1,96 +1,170 @@
-// import 'package:flutter/material.dart';
-// import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../models/task.dart';
 
-// import '../models/task.dart';
-// import '../providers/task_provider.dart';
+class AddTaskPage extends StatefulWidget {
+  final String userId;
 
-// class TaskFormScreen extends StatefulWidget {
-//   final Task? task;
+  AddTaskPage({required this.userId});
 
-//   const TaskFormScreen({Key? key, this.task}) : super(key: key);
+  @override
+  _AddTaskPageState createState() => _AddTaskPageState();
+}
 
-//   @override
-//   _TaskFormScreenState createState() => _TaskFormScreenState();
-// }
+class _AddTaskPageState extends State<AddTaskPage> {
+  // Controllers for form inputs
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
 
-// class _TaskFormScreenState extends State<TaskFormScreen> {
-//   final _formKey = GlobalKey<FormState>();
-//   late TextEditingController _titleController;
-//   late TextEditingController _descriptionController;
+  // Loading state
+  bool _isLoading = false;
 
-//   @override
-//   void initState() {
-//     super.initState();
-//     _titleController = TextEditingController(text: widget.task?.title ?? '');
-//     _descriptionController =
-//         TextEditingController(text: widget.task?.description ?? '');
-//   }
+  // Function to add task to Firestore
+  Future<void> _addTask() async {
+    if (_titleController.text.isEmpty || _descriptionController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Title and description cannot be empty.')),
+      );
+      return;
+    }
 
-//   @override
-//   void dispose() {
-//     _titleController.dispose();
-//     _descriptionController.dispose();
-//     super.dispose();
-//   }
+    setState(() {
+      _isLoading = true;
+    });
 
-//   @override
-//   Widget build(BuildContext context) {
-//     final taskProvider = Provider.of<TaskProvider>(context);
+    try {
+      final task = Task(
+        id: '', // Firestore will generate the ID
+        userId: widget.userId,
+        title: _titleController.text.trim(),
+        description: _descriptionController.text.trim(),
+        isCompleted: false,
+        createdAt: Timestamp.now(),
+      );
 
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text(widget.task == null ? 'Add Task' : 'Edit Task'),
-//       ),
-//       body: Padding(
-//         padding: const EdgeInsets.all(16.0),
-//         child: Form(
-//           key: _formKey,
-//           child: Column(
-//             children: [
-//               TextFormField(
-//                 controller: _titleController,
-//                 decoration: const InputDecoration(labelText: 'Title'),
-//                 validator: (value) {
-//                   if (value == null || value.isEmpty) {
-//                     return 'Please enter a title';
-//                   }
-//                   return null;
-//                 },
-//               ),
-//               TextFormField(
-//                 controller: _descriptionController,
-//                 decoration: const InputDecoration(labelText: 'Description'),
-//                 maxLines: 3,
-//               ),
-//               const SizedBox(height: 16),
-//               ElevatedButton(
-//                 onPressed: () {
-//                   if (_formKey.currentState!.validate()) {
-//                     final task = Task(
-//                       id: widget.task?.id ?? DateTime.now().toString(),
-//                       title: _titleController.text,
-//                       description: _descriptionController.text,
-//                       isCompleted: widget.task?.isCompleted ?? false,
-//                       createdAt: widget.task?.createdAt ?? DateTime.now(),
-//                       userId: 'currentUserId', // Replace with actual user ID
-//                       // imageUrl: widget.task?.imageUrl,
-//                     );
+      // Add to Firestore
+      final docRef = FirebaseFirestore.instance.collection('tasks').doc();
+      await docRef.set(task.copyWith(id: docRef.id).toMap());
 
-//                     if (widget.task == null) {
-//                       taskProvider.addTask(task);
-//                     } else {
-//                       taskProvider.updateTask(task);
-//                     }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Task added successfully!')),
+      );
 
-//                     Navigator.pop(context);
-//                   }
-//                 },
-//                 child: Text(widget.task == null ? 'Add Task' : 'Save Changes'),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
+      // Use context.go() or context.pop() for GoRouter navigation
+      // If you want to go back to the task list screen:
+      context.go('/tasks');
+      context.pop(); // Safe navigation
+    } catch (e, stackTrace) {
+      // Log error to console
+      print('Error adding task: $e');
+      print('StackTrace: $stackTrace');
+
+      // Display error message in the UI
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(content: Text('Failed to add task: $e')),
+      // );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(255, 255, 255, 255),
+              Color.fromARGB(255, 255, 255, 255)
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Container(
+              child: Container(
+                // width: MediaQuery.of(context).size.width * 0.8, // Reduced width
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      'Create a New Task',
+                      style: TextStyle(
+                        fontSize: 44,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromRGBO(18, 112, 37, 1),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 40),
+                    TextField(
+                      controller: _titleController,
+                      decoration: InputDecoration(
+                        labelText: 'Task Title',
+                        fillColor: Colors.white,
+                        prefixIcon: Icon(Icons.title),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    TextField(
+                      controller: _descriptionController,
+                      maxLines: 4,
+                      decoration: InputDecoration(
+                        labelText: 'Task Description',
+                        prefixIcon: Icon(Icons.description),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    _isLoading
+                        ? Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.deepPurpleAccent,
+                            ),
+                          )
+                        : ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              backgroundColor: Colors.deepPurpleAccent,
+                            ),
+                            onPressed: _addTask,
+                            child: Text(
+                              'Save Task',
+                              style:
+                                  TextStyle(fontSize: 18, color: Colors.white),
+                            ),
+                          ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

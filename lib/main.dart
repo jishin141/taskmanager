@@ -11,6 +11,7 @@ import 'screens/signup_screen.dart';
 import 'screens/splashscreen.dart';
 import 'screens/task_list_screen.dart';
 import 'screens/task_details_screen.dart';
+import 'screens/taskformscreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,57 +49,40 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// GoRouter Configuration
-// final GoRouter _router = GoRouter(
-//   routes: [
-//     GoRoute(path: '/', builder: (context, state) => const LoginScreen()),
-//     GoRoute(path: '/signup', builder: (context, state) => const SignUpScreen()),
-//     GoRoute(
-//         path: '/tasks', builder: (context, state) => const TaskListScreen()),
-//     GoRoute(
-//       path: '/tasks/:id',
-//       builder: (context, state) =>
-//           TaskDetailsScreen(taskId: state.params['id']!),
-//     ),
-//   ],
-// );
 final GoRouter _router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) =>
-          const SplashScreen(), // Set SplashScreen as the initial route
+      builder: (context, state) => const SplashScreen(),
     ),
     GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
     GoRoute(path: '/signup', builder: (context, state) => const SignUpScreen()),
+    // GoRoute(
+    //   path: '/tasks',
+    //   builder: (context, state) => const TaskListScreen(),
+    // ),
     GoRoute(
-        path: '/tasks', builder: (context, state) => const TaskListScreen()),
+      path: '/tasks',
+      builder: (context, state) {
+        final userId = 'some_user_id'; // Get the current user ID
+        return TaskListScreen(userId: userId); // Pass userId to TaskListScreen
+      },
+    ),
     GoRoute(
       path: '/tasks/:id',
       builder: (context, state) =>
           TaskDetailsScreen(taskId: state.pathParameters['id']!),
     ),
+    GoRoute(
+      path: '/add-task',
+      builder: (context, state) {
+        final userId = Provider.of<AuthProvider>(context, listen: false).userId;
+        if (userId == null) {
+          // Redirect to login if userId is null
+          return const LoginScreen();
+        }
+        return AddTaskPage(userId: userId);
+      },
+    ),
   ],
 );
-
-// final GoRouter _router = GoRouter(
-//   routes: [
-//     GoRoute(path: '/', builder: (context, state) => const LoginScreen()),
-//     GoRoute(path: '/signup', builder: (context, state) => const SignUpScreen()),
-//     GoRoute(
-//         path: '/tasks', builder: (context, state) => const TaskListScreen()),
-//     GoRoute(
-//       path: '/tasks/:id',
-//       builder: (context, state) =>
-//           TaskDetailsScreen(taskId: state.pathParameters['id']!),
-//     ),
-//     GoRoute(
-//       path: '/task-form',
-//       builder: (context, state) {
-//         final task = state.extra as Task?;
-//         return TaskFormScreen(
-//             task: task); // Pass task for editing or null for creating
-//       },
-//     ),
-//   ],
-// );
