@@ -19,3 +19,14 @@ User-Specific Data User data is securely isolated by associating tasks with the 
 Login Screen: Captures the authentication interface. Task List: Displays tasks with their title, description, and status. Task Details: Provides the editing and viewing interface for individual tasks.
 
 Installation Guide Prerequisites Install the Flutter SDK (Installation Guide). Set up a Firebase project in your Google account. Enable Firebase Authentication, Firestore, and Storage in the Firebase console.
+
+![IMG-20241123-WA0007](https://github.com/user-attachments/assets/4cc43e70-4eac-4f6f-878e-fbf9ea0dbdb9)
+
+![IMG-20241123-WA0008](https://github.com/user-attachments/assets/e4937eed-f623-4611-bd8d-740b866fc202)
+
+![IMG-20241123-WA0009](https://github.com/user-attachments/assets/e152226b-9d83-4604-a68b-228fc70c3ab9)
+
+![IMG-20241123-WA0010](https://github.com/user-attachments/assets/66c919f6-34ed-49cf-8e5d-fbd2595e1b9e)
+
+![IMG-20241123-WA0011](https://github.com/user-attachments/assets/95eebfda-b7bf-4c4b-a56e-32103c9a9c9a)
+
