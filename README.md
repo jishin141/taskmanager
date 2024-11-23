@@ -28,7 +28,9 @@ Installation Guide Prerequisites Install the Flutter SDK (Installation Guide). S
 
 ![IMG-20241123-WA0009](https://github.com/user-attachments/assets/e152226b-9d83-4604-a68b-228fc70c3ab9)
 
-
-
 ![IMG-20241123-WA0011](https://github.com/user-attachments/assets/95eebfda-b7bf-4c4b-a56e-32103c9a9c9a)
+
+![Screenshot 2024-11-23 152922](https://github.com/user-attachments/assets/d42b6434-3a20-4b27-a731-8458e1e5617a)
+
+![Screenshot 2024-11-23 152828](https://github.com/user-attachments/assets/c451e3b2-81af-45ba-8088-6ea3c4554d4f)
 
